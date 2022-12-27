@@ -1,0 +1,18 @@
+services:
+
+  backend:
+    build:
+     context: .
+     target: production
+    volumes:
+     - backend-src:tipping/
+    networks:
+     - tipping-network
+
+
+volumes:
+  backend-src:
+    driver: flocker
+
+networks:
+  tipping-network: {}
