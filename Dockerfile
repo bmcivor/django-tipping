@@ -1,4 +1,4 @@
-FROM python:3.11.1-slim-buster as build-stage
+FROM python:3.11.1-slim-buster AS build-stage
 
 WORKDIR /app
 
