@@ -1,4 +1,5 @@
 FROM python:3.11.1-slim-buster AS base
+
 WORKDIR /app
 
 # Install system dependencies required for building packages and Poetry
