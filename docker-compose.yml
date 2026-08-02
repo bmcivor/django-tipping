@@ -10,6 +10,9 @@ services:
      - tipping-network
     ports:
      - 8000:8000
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
 
   db:
     image: postgres:18.4-alpine
@@ -18,7 +21,7 @@ services:
       POSTGRES_PASSWORD: django
       POSTGRES_DB: django
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/
     networks:
      - tipping-network
     ports:
@@ -28,6 +31,19 @@ services:
       interval: 2s
       timeout: 5s
       retries: 30
+
+  migrate:
+    build:
+      context: ./backend
+      target: production
+    volumes:
+     - ./backend:/app
+    command: ["python", "manage.py", "migrate"]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+     - tipping-network
 
 volumes:
   db-data:
