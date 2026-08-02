@@ -8,6 +8,12 @@ RUN npm install
 
 CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
+FROM base AS test
+
+COPY . .
+
+CMD ["npm", "run", "test"]
+
 FROM base AS production
 
 COPY . .

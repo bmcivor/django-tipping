@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cleanup() {
+    docker compose down -v --remove-orphans >/dev/null 2>&1 || true
+}
+trap cleanup EXIT
+
+cleanup
+
+run_backend() {
+    docker compose run --rm --build backend-test pytest "$@"
+}
+
+run_frontend() {
+    docker compose run --rm --build frontend-test
+}
+
+case "${1:-all}" in
+    backend)
+        shift
+        run_backend "$@"
+        ;;
+    frontend)
+        run_frontend
+        ;;
+    all)
+        run_backend
+        run_frontend
+        ;;
+    *)
+        echo "usage: ${0##*/} [backend [pytest args...] | frontend]" >&2
+        exit 2
+        ;;
+esac
