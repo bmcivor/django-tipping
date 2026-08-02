@@ -1,21 +1,3 @@
-# ==============================================================================
-# Created by https://dockerignore.com/
-# FRAMEWORK TEMPLATE for Django
-# Website: https://www.djangoproject.com/
-# Repository: https://github.com/django/django
-# ==============================================================================
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# TEMPLATE OVERVIEW & USAGE NOTES
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# • TEMPLATE TYPE: FRAMEWORK TEMPLATE
-# • PURPOSE: Django-specific ignore patterns
-# • OFFICIAL SOURCES: Django community patterns and best practices
-# • DESIGN PHILOSOPHY: Self-contained template with security patterns first
-# • COMBINATION GUIDANCE: Use standalone - no need to combine with other templates
-# • SECURITY CONSIDERATIONS: Includes security patterns for .env files and credentials
-# • BEST PRACTICES: Review before use, test with your specific Django setup
-
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 # Security & Sensitive Data
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
@@ -171,7 +153,6 @@ coverage.xml
 **/staticfiles/
 
 ._*
-!*/migrations/__init__.py
 
 *$py.class
 *.old
@@ -180,7 +161,6 @@ coverage.xml
 *.swo
 *.swp
 
-*/migrations/*.py
 db.sqlite3
 db.sqlite3-journal
 local_settings.py
