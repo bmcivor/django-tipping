@@ -1,19 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+compose() {
+    docker compose -f docker-compose.yml "$@"
+}
+
 cleanup() {
-    docker compose down -v --remove-orphans >/dev/null 2>&1 || true
+    compose down -v --remove-orphans >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
 
 cleanup
 
 run_backend() {
-    docker compose run --rm --build backend-test pytest "$@"
+    compose run --rm --build backend-test pytest "$@"
 }
 
 run_frontend() {
-    docker compose run --rm --build frontend-test
+    compose run --rm --build frontend-test
 }
 
 case "${1:-all}" in

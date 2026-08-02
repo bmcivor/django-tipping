@@ -1,0 +1,9 @@
+services:
+
+  migrate:
+    volumes:
+     - ./backend:/app
+
+  backend-test:
+    volumes:
+     - ./backend:/app

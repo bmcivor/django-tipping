@@ -24,8 +24,6 @@ services:
       - db-data:/var/lib/postgresql/
     networks:
      - tipping-network
-    ports:
-     - 5432:5432
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "django", "-d", "django"]
       interval: 2s
@@ -36,8 +34,6 @@ services:
     build:
       context: ./backend
       target: production
-    volumes:
-     - ./backend:/app
     command: ["python", "manage.py", "migrate"]
     depends_on:
       db:
@@ -62,12 +58,8 @@ services:
     build:
      context: ./backend
      target: test
-    volumes:
-     - ./backend:/app
     networks:
      - tipping-network
-    ports:
-     - 8000:8000
     depends_on:
       migrate:
         condition: service_completed_successfully
