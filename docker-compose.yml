@@ -11,5 +11,27 @@ services:
     ports:
      - 8000:8000
 
+  db:
+    image: postgres:18.4-alpine
+    environment:
+      POSTGRES_USER: django
+      POSTGRES_PASSWORD: django
+      POSTGRES_DB: django
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+     - tipping-network
+    ports:
+     - 5432:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "django", "-d", "django"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  db-data:
+    driver: local
+
 networks:
   tipping-network: {}
