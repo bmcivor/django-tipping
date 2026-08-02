@@ -45,6 +45,19 @@ services:
     networks:
      - tipping-network
 
+  frontend:
+    build:
+      context: ./frontend
+      target: base
+    volumes:
+     - ./frontend:/app
+     - /app/node_modules
+    networks:
+     - tipping-network
+    ports:
+     - 5173:5173
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
 volumes:
   db-data:
     driver: local
