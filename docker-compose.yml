@@ -2,17 +2,14 @@ services:
 
   backend:
     build:
-     context: .
+     context: ./backend
      target: production
     volumes:
-     - backend-src:tipping/
+     - ./backend:/app
     networks:
      - tipping-network
-
-
-volumes:
-  backend-src:
-    driver: flocker
+    ports:
+     - 8000:8000
 
 networks:
   tipping-network: {}
