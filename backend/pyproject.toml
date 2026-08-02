@@ -41,6 +41,7 @@ Issues = "https://github.com/bmcivor/django-tipping/issues"
 dev = [
     "pytest==9.0.2",
     "python-semantic-release==9.21.1",
+    "pytest-django==4.12.0",
 ]
 
 [tool.semantic_release]
@@ -53,5 +54,5 @@ assets = ["uv.lock"]
 match = "tag-release"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["tests"]
+DJANGO_SETTINGS_MODULE = "tipping.settings"
+pythonpath = ["."]

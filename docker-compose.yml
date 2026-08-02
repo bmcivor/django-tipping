@@ -58,6 +58,27 @@ services:
      - 5173:5173
     command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
+  backend-test:
+    build:
+     context: ./backend
+     target: test
+    volumes:
+     - ./backend:/app
+    networks:
+     - tipping-network
+    ports:
+     - 8000:8000
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  frontend-test:
+    build:
+      context: ./frontend
+      target: test
+    networks:
+     - tipping-network
+
 volumes:
   db-data:
     driver: local
