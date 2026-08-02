@@ -12,7 +12,7 @@ license-files = ["LICENSE"]
 authors = [
     { name = "Blake McIvor" },
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
@@ -26,6 +26,7 @@ classifiers = [
 ]
 keywords = ["django-tipping", "tipping"]
 dependencies = [
+    "django==6.0.7",
     "psycopg2-binary==2.9.12",
 ]
 
