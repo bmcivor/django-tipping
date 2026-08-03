@@ -62,12 +62,12 @@ Checks only — nothing here rewrites source. Every check runs even when an earl
 
 Unlike `test.sh` there is no teardown, because linting needs no database and a run should not disturb a stack you already have up. It also passes `--no-deps`, so checking the backend doesn't boot Postgres and apply migrations first.
 
-To fix what it reports:
+To fix what it reports, run the fixers against `backend` and `frontend`. Those always mount your source, so writes land on disk. `frontend-test` never has a mount and `backend-test` only gets one from the override file, so results there depend on how compose was invoked:
 
 ```bash
-docker compose run --rm --no-deps backend-test ruff format .
-docker compose run --rm --no-deps backend-test ruff check --fix .
-docker compose run --rm --no-deps frontend-test npx prettier --write .
+docker compose run --rm --no-deps backend ruff format .
+docker compose run --rm --no-deps backend ruff check --fix .
+docker compose run --rm --no-deps frontend npx prettier --write .
 ```
 
 ## CI

@@ -22,7 +22,7 @@ pipeline {
 
         stage('Frontend quality checks') {
             steps {
-                sh './scripts.lint.sh frontend'
+                sh './scripts/lint.sh frontend'
             }
         }
     }

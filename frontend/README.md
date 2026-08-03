@@ -4,14 +4,14 @@ Vite + React + TypeScript SPA, scaffolded from the `react-compiler-ts` template.
 
 ## Layout
 
-| Path | Contents |
-|---|---|
-| `src/` | Application source |
-| `index.html` | Vite entry point |
-| `vite.config.ts` | Dev server and plugin configuration |
-| `eslint.config.js` | ESLint configuration |
-| `tsconfig*.json` | TypeScript configuration |
-| `Dockerfile` | `base` → `test` / `production` stages |
+| Path               | Contents                              |
+| ------------------ | ------------------------------------- |
+| `src/`             | Application source                    |
+| `index.html`       | Vite entry point                      |
+| `vite.config.ts`   | Dev server and plugin configuration   |
+| `eslint.config.js` | ESLint configuration                  |
+| `tsconfig*.json`   | TypeScript configuration              |
+| `Dockerfile`       | `base` → `test` / `production` stages |
 
 ## Dependencies
 
@@ -53,11 +53,13 @@ ESLint and Prettier:
 ../scripts/lint.sh frontend
 ```
 
-Runs `npm run lint` (ESLint, configured in `eslint.config.js`) and `npx prettier --check .`. Both run even if the first fails, and neither rewrites source:
+Runs `npm run lint` (ESLint, configured in `eslint.config.js`) and `npx prettier --check .`. Both run even if the first fails, and neither rewrites source. To fix, from the repository root:
 
 ```bash
-npx prettier --write .
+docker compose run --rm --no-deps frontend npx prettier --write .
 ```
+
+That runs against `frontend`, not `frontend-test`. Unlike its backend counterpart, `frontend-test` has no bind mount in either compose file, so anything it rewrites is discarded with the container — it will appear to succeed and change nothing.
 
 Prettier has no config file, so it runs on its defaults. `eslint-config-prettier` — the package that turns off ESLint rules Prettier would otherwise fight over — is not installed; current typescript-eslint presets carry few stylistic rules, so the two have not collided yet.
 

@@ -58,9 +58,11 @@ Ruff and mypy, both configured in `pyproject.toml`:
 Runs `ruff format --check`, then `ruff check`, then `mypy`. All three run even if an earlier one fails, and nothing rewrites source — fixing is manual:
 
 ```bash
-docker compose run --rm --no-deps backend-test ruff format .
-docker compose run --rm --no-deps backend-test ruff check --fix .
+docker compose run --rm --no-deps backend ruff format .
+docker compose run --rm --no-deps backend ruff check --fix .
 ```
+
+`backend-test` also works for this, but only because `docker-compose.override.yml` adds a bind mount to it. Under `lint.sh`, which passes `-f docker-compose.yml` and so drops the override, it has no mount and anything it rewrites is lost with the container. `backend` mounts source in the base file, so it works either way.
 
 `ruff format` is a Black-compatible formatter and `ruff check` is the linter, so neither Black nor isort is needed separately. With no `[tool.ruff.lint]` block the defaults apply — `E4`, `E7`, `E9` and `F`. Import sorting (`I`) is not in that set and has to be selected explicitly.
 
