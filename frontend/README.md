@@ -1,75 +1,60 @@
-# React + TypeScript + Vite
+# django-tipping frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Vite + React + TypeScript SPA, scaffolded from the `react-compiler-ts` template. The React Compiler runs as a Babel pass via `@vitejs/plugin-react`.
 
-Currently, two official plugins are available:
+## Layout
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Path | Contents |
+|---|---|
+| `src/` | Application source |
+| `index.html` | Vite entry point |
+| `vite.config.ts` | Dev server and plugin configuration |
+| `eslint.config.js` | ESLint configuration |
+| `tsconfig*.json` | TypeScript configuration |
+| `Dockerfile` | `base` → `test` / `production` stages |
 
-## React Compiler
+## Dependencies
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+Install through the container so nothing lands on the host:
 
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+docker compose run --rm frontend npm i -D <package>
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The bind mount writes `package.json` and `package-lock.json` back to the host, while `node_modules` stays in the container's anonymous volume. Running `npm install` directly on the host works too, but then the host and container copies diverge.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Running
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+From the repository root:
+
+```bash
+docker compose up frontend
 ```
+
+Serves on 5173 with HMR over the bind mount. The dev server binds `0.0.0.0` so the published port is reachable from the host.
+
+## Tests
+
+Vitest, run through the stack from the repository root:
+
+```bash
+../scripts/test.sh frontend
+```
+
+The `test` script is `vitest run` — a single pass that exits, rather than watch mode, so CI does not hang. For a watching loop locally, use `npx vitest`.
+
+Component tests will need a DOM environment (`jsdom` or `happy-dom`) and `@testing-library/react`; neither is installed yet.
+
+## Talking to the backend
+
+The backend is reachable as `backend:8000` over the compose network. Proxy API calls through the dev server rather than hardcoding an origin, by adding to `vite.config.ts`:
+
+```ts
+server: {
+  proxy: {
+    '/api': { target: 'http://backend:8000', changeOrigin: true },
+  },
+}
+```
+
+No proxy is configured yet — Django currently serves only `/admin/`.
