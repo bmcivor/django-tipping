@@ -27,7 +27,10 @@ classifiers = [
 keywords = ["django-tipping", "tipping"]
 dependencies = [
     "django==6.0.7",
+    "django-stubs==6.0.7",
+    "mypy==2.3.0",
     "psycopg2-binary==2.9.12",
+    "ruff==0.16.1",
 ]
 
 [project.urls]
@@ -56,3 +59,17 @@ match = "tag-release"
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "tipping.settings"
 pythonpath = ["."]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+indent-width = 4
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "tipping.settings"

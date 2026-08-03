@@ -45,6 +45,22 @@ The `test` script is `vitest run` — a single pass that exits, rather than watc
 
 Component tests will need a DOM environment (`jsdom` or `happy-dom`) and `@testing-library/react`; neither is installed yet.
 
+## Quality checks
+
+ESLint and Prettier:
+
+```bash
+../scripts/lint.sh frontend
+```
+
+Runs `npm run lint` (ESLint, configured in `eslint.config.js`) and `npx prettier --check .`. Both run even if the first fails, and neither rewrites source:
+
+```bash
+npx prettier --write .
+```
+
+Prettier has no config file, so it runs on its defaults. `eslint-config-prettier` — the package that turns off ESLint rules Prettier would otherwise fight over — is not installed; current typescript-eslint presets carry few stylistic rules, so the two have not collided yet.
+
 ## Talking to the backend
 
 The backend is reachable as `backend:8000` over the compose network. Proxy API calls through the dev server rather than hardcoding an origin, by adding to `vite.config.ts`:

@@ -13,6 +13,18 @@ pipeline {
                 sh './scripts/test.sh frontend'
             }
         }
+
+        stage('Backend quality checks') {
+            steps {
+                sh './scripts/lint.sh backend'
+            }
+        }
+
+        stage('Frontend quality checks') {
+            steps {
+                sh './scripts.lint.sh frontend'
+            }
+        }
     }
 
     post {

@@ -50,9 +50,29 @@ Arguments after `backend` are passed through to pytest:
 
 The script tears the stack down before and after each run and always rebuilds, so a run never uses stale images. It invokes compose with `-f docker-compose.yml`, which excludes the dev bind mounts in the override file — test containers run the source baked into the image, matching what CI does.
 
+## Quality checks
+
+```bash
+./scripts/lint.sh            # backend then frontend
+./scripts/lint.sh backend    # ruff format --check, ruff check, mypy
+./scripts/lint.sh frontend   # eslint, prettier --check
+```
+
+Checks only — nothing here rewrites source. Every check runs even when an earlier one fails, so a single pass shows all outstanding work, and the script exits non-zero if any of them reported something.
+
+Unlike `test.sh` there is no teardown, because linting needs no database and a run should not disturb a stack you already have up. It also passes `--no-deps`, so checking the backend doesn't boot Postgres and apply migrations first.
+
+To fix what it reports:
+
+```bash
+docker compose run --rm --no-deps backend-test ruff format .
+docker compose run --rm --no-deps backend-test ruff check --fix .
+docker compose run --rm --no-deps frontend-test npx prettier --write .
+```
+
 ## CI
 
-`Jenkinsfile` runs backend tests then frontend tests on the Jenkins instance managed by vertex-studio, where the repo is registered via `jenkins_repos` in that project's inventory.
+`Jenkinsfile` runs four stages — backend tests, frontend tests, then backend and frontend quality checks — on the Jenkins instance managed by vertex-studio, where the repo is registered via `jenkins_repos` in that project's inventory. Any stage failing fails the build, so lint findings block a merge.
 
 ## Licence
 
