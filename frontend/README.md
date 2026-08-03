@@ -4,14 +4,14 @@ Vite + React + TypeScript SPA, scaffolded from the `react-compiler-ts` template.
 
 ## Layout
 
-| Path | Contents |
-|---|---|
-| `src/` | Application source |
-| `index.html` | Vite entry point |
-| `vite.config.ts` | Dev server and plugin configuration |
-| `eslint.config.js` | ESLint configuration |
-| `tsconfig*.json` | TypeScript configuration |
-| `Dockerfile` | `base` → `test` / `production` stages |
+| Path               | Contents                              |
+| ------------------ | ------------------------------------- |
+| `src/`             | Application source                    |
+| `index.html`       | Vite entry point                      |
+| `vite.config.ts`   | Dev server and plugin configuration   |
+| `eslint.config.js` | ESLint configuration                  |
+| `tsconfig*.json`   | TypeScript configuration              |
+| `Dockerfile`       | `base` → `test` / `production` stages |
 
 ## Dependencies
 
@@ -44,6 +44,24 @@ Vitest, run through the stack from the repository root:
 The `test` script is `vitest run` — a single pass that exits, rather than watch mode, so CI does not hang. For a watching loop locally, use `npx vitest`.
 
 Component tests will need a DOM environment (`jsdom` or `happy-dom`) and `@testing-library/react`; neither is installed yet.
+
+## Quality checks
+
+ESLint and Prettier:
+
+```bash
+../scripts/lint.sh frontend
+```
+
+Runs `npm run lint` (ESLint, configured in `eslint.config.js`) and `npx prettier --check .`. Both run even if the first fails, and neither rewrites source. To fix, from the repository root:
+
+```bash
+docker compose run --rm --no-deps frontend npx prettier --write .
+```
+
+That runs against `frontend`, not `frontend-test`. Unlike its backend counterpart, `frontend-test` has no bind mount in either compose file, so anything it rewrites is discarded with the container — it will appear to succeed and change nothing.
+
+Prettier has no config file, so it runs on its defaults. `eslint-config-prettier` — the package that turns off ESLint rules Prettier would otherwise fight over — is not installed; current typescript-eslint presets carry few stylistic rules, so the two have not collided yet.
 
 ## Talking to the backend
 

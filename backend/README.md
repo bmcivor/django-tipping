@@ -47,6 +47,27 @@ Run them through the stack from the repository root:
 ../scripts/test.sh backend
 ```
 
+## Quality checks
+
+Ruff and mypy, both configured in `pyproject.toml`:
+
+```bash
+../scripts/lint.sh backend
+```
+
+Runs `ruff format --check`, then `ruff check`, then `mypy`. All three run even if an earlier one fails, and nothing rewrites source — fixing is manual:
+
+```bash
+docker compose run --rm --no-deps backend ruff format .
+docker compose run --rm --no-deps backend ruff check --fix .
+```
+
+`backend-test` also works for this, but only because `docker-compose.override.yml` adds a bind mount to it. Under `lint.sh`, which passes `-f docker-compose.yml` and so drops the override, it has no mount and anything it rewrites is lost with the container. `backend` mounts source in the base file, so it works either way.
+
+`ruff format` is a Black-compatible formatter and `ruff check` is the linter, so neither Black nor isort is needed separately. With no `[tool.ruff.lint]` block the defaults apply — `E4`, `E7`, `E9` and `F`. Import sorting (`I`) is not in that set and has to be selected explicitly.
+
+mypy uses `django-stubs` through the `mypy_django_plugin.main` plugin, with `[tool.django-stubs] django_settings_module` pointing at `tipping.settings`. Without that plugin registration the stubs are installed but inert.
+
 ## Docker
 
 Three stages. `base` installs uv and copies only `pyproject.toml` and `uv.lock`, so the dependency layer is cached independently of source changes. `production` and `test` each sync from that base — `--no-dev` and `--group dev` respectively — then copy the source.
