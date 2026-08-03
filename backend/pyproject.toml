@@ -49,6 +49,7 @@ dev = [
 
 [tool.semantic_release]
 version_toml = ["pyproject.toml:project.version"]
+version_variables = ["../frontend/package.json:version"]
 tag_format = "v{version}"
 build_command = "uv lock --no-cache --no-progress"
 assets = ["uv.lock"]
