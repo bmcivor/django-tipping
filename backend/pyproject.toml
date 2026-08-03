@@ -52,7 +52,9 @@ version_toml = ["pyproject.toml:project.version"]
 version_variables = ["../frontend/package.json:version"]
 tag_format = "v{version}"
 build_command = "uv lock --no-cache --no-progress"
-assets = ["uv.lock"]
+# Relative to the git root, unlike version_toml / version_variables above,
+# which resolve from the working directory.
+assets = ["backend/uv.lock"]
 
 [tool.semantic_release.branches.main]
 match = "tag-release"
