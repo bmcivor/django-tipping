@@ -25,3 +25,9 @@ RUN uv sync --frozen --group dev --no-install-project
 COPY . .
 
 CMD ["pytest", "-v"]
+
+FROM test AS release
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*

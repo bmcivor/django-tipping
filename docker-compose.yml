@@ -71,6 +71,16 @@ services:
     networks:
      - tipping-network
 
+  release:
+    build:
+      context: ./backend
+      target: release
+    # The whole repository, because semantic-release needs the git history and
+    # writes tags — .git lives at the root, while pyproject.toml is in backend/.
+    volumes:
+     - .:/repo
+    working_dir: /repo/backend
+
 volumes:
   db-data:
     driver: local
