@@ -13,7 +13,7 @@ trap cleanup EXIT
 cleanup
 
 run_backend() {
-    compose run --rm --build backend-test pytest "$@"
+    compose run --rm --build backend-test pytest -vvv "$@"
 }
 
 run_frontend() {

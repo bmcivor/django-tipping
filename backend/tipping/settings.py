@@ -70,6 +70,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "tipping.wsgi.application"
 
+AUTH_USER_MODEL = "users.User"
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -77,7 +78,7 @@ WSGI_APPLICATION = "tipping.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_DB", "django"),
+        "NAME": os.getenv("POSTGRES_DB", "django-tipping"),
         "USER": os.getenv("POSTGRES_USER", "django"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD", "django"),
         "HOST": os.getenv("POSTGRES_HOST", "db"),
