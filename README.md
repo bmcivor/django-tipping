@@ -15,16 +15,19 @@ A Django application for managing and conducting sports tipping competitions.
 
 ## Services
 
-| Service | Purpose | Host port |
-|---|---|---|
-| `backend` | Django dev server | 8000 |
-| `frontend` | Vite dev server | 5173 |
-| `db` | PostgreSQL 18 | not published |
-| `migrate` | One-shot `manage.py migrate`, runs before `backend` starts | — |
-| `backend-test` | pytest | — |
-| `frontend-test` | Vitest | — |
+| Service | Purpose | Host port | Profile |
+|---|---|---|---|
+| `backend` | Django dev server | 8000 | — |
+| `frontend` | Vite dev server | 5173 | — |
+| `db` | PostgreSQL 18 | not published | — |
+| `migrate` | One-shot `manage.py migrate`, runs before `backend` starts | — | — |
+| `backend-test` | pytest | — | `test` |
+| `frontend-test` | Vitest | — | `test` |
+| `release` | python-semantic-release | — | `release` |
 
 `db` is deliberately not published to the host — everything reaches it as `db:5432` over the compose network.
+
+Services with a profile are excluded from `docker compose up`, so bringing the stack up starts the four unprofiled ones and nothing else. `docker compose run <service>` enables that service's own profile, which is why the scripts in `scripts/` reach them without naming one.
 
 ## Running
 

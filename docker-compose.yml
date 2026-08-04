@@ -54,7 +54,12 @@ services:
      - 5173:5173
     command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
+  # Profiled services are excluded from a plain `docker compose up`.
+  # `docker compose run <service>` enables a service's own profiles, so the
+  # scripts in scripts/ reach these without naming a profile.
+
   backend-test:
+    profiles: ["test"]
     build:
      context: ./backend
      target: test
@@ -65,6 +70,7 @@ services:
         condition: service_completed_successfully
 
   frontend-test:
+    profiles: ["test"]
     build:
       context: ./frontend
       target: test
@@ -72,6 +78,7 @@ services:
      - tipping-network
 
   release:
+    profiles: ["release"]
     build:
       context: ./backend
       target: release
