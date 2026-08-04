@@ -48,9 +48,28 @@ Note that `uv` creates its environment in `.venv/` here and ignores an already-a
 
 `POSTGRES_HOST` defaults to `db`, which only resolves inside the compose network. Running `manage.py` on the host requires overriding it, and `db` publishes no host port, so there is nothing to reach by default.
 
+## Running manage.py commands
+
+From the repository root, since that is where the compose file lives:
+
+```bash
+docker compose run --rm --user "$(id -u):$(id -g)" backend python manage.py makemigrations
+docker compose run --rm --user "$(id -u):$(id -g)" backend python manage.py createsuperuser
+```
+
+Two things make that work, and both fail quietly if you drop them.
+
+**A service carrying a bind mount.** `backend` mounts source in the base compose file, so it always works. `migrate` and `backend-test` only get a mount from `docker-compose.override.yml`, so they work under a plain `docker compose` and not under `test.sh`, `lint.sh` or `fix.sh`, which pass `-f docker-compose.yml` and drop the override. Run `makemigrations` on a service with no mount and the file is written inside the container and thrown away with it.
+
+**`--user`.** The Dockerfile sets no `USER`, so the container is root and anything it writes through a bind mount is root-owned on your host.
+
+Add `--no-deps` for commands that need no database — `makemigrations` compares models against migration files on disk. It will warn that it could not check migration history, which is harmless; drop the flag to silence it and let `db` start.
+
+`createsuperuser` prompts for email, first name and last name rather than a username, since `USERNAME_FIELD` is `email` and `REQUIRED_FIELDS` names the other two.
+
 ## Tests
 
-pytest with `pytest-django`. Django creates and drops its own `test_django` database inside the running Postgres instance, so no separate test database service exists.
+pytest with `pytest-django`. Django creates and drops its own `test_django-tipping` database inside the running Postgres instance, so no separate test database service exists.
 
 Run them through the stack from the repository root:
 
