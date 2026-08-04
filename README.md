@@ -92,7 +92,7 @@ A release rewrites both version files — `backend/pyproject.toml` and `frontend
 
 Note that `assets` paths in that config resolve from the git root, unlike `version_toml` and `version_variables`, which resolve from the working directory. That is why the lockfile is listed as `backend/uv.lock`.
 
-The push currently fails: the `GH_TOKEN` in use is a fine-grained PAT with no access to this repository, so git falls back to prompting for credentials. Tracked as a GitHub issue. The version commit and tag are created locally before that point, so a failed release leaves them behind.
+The push currently fails: the `GH_TOKEN` in use is a fine-grained PAT with no access to this repository, so git falls back to prompting for credentials. The version commit and tag are created locally before that point, so a failed release leaves them behind.
 
 ## CI
 
