@@ -40,7 +40,7 @@ Note that `uv` creates its environment in `.venv/` here and ignores an already-a
 
 | Variable | Default |
 |---|---|
-| `POSTGRES_DB` | `django` |
+| `POSTGRES_DB` | `django-tipping` |
 | `POSTGRES_USER` | `django` |
 | `POSTGRES_PASSWORD` | `django` |
 | `POSTGRES_HOST` | `db` |
