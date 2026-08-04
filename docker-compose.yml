@@ -25,7 +25,7 @@ services:
     networks:
      - tipping-network
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "django", "-d", "django"]
+      test: ["CMD", "pg_isready", "-U", "django", "-d", "django-tipping"]
       interval: 2s
       timeout: 5s
       retries: 30
