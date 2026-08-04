@@ -73,6 +73,27 @@ docker compose run --rm --no-deps backend ruff check --fix .
 docker compose run --rm --no-deps frontend npx prettier --write .
 ```
 
+## Releases
+
+[python-semantic-release](https://python-semantic-release.readthedocs.io/), run inside the `release` container so it has git and the dev dependencies:
+
+```bash
+./scripts/release.sh --noop version --minor   # report the bump, write nothing
+./scripts/release.sh version --minor          # bump, commit, tag
+```
+
+`--noop` is a global flag and has to come before the subcommand. Always worth running first — it prints every command it would execute, including the exact `git add` and `git push`.
+
+**Releases are cut from the `tag-release` branch.** `[tool.semantic_release.branches.main] match = "tag-release"` in `backend/pyproject.toml` names it, and semantic-release declines to release from anywhere else.
+
+The bump level comes from conventional commit messages since the last tag — `fix:` gives a patch, `feat:` a minor, `feat!:` or a `BREAKING CHANGE:` footer a major. Passing `--patch`, `--minor` or `--major` forces it instead.
+
+A release rewrites both version files — `backend/pyproject.toml` and `frontend/package.json` — regenerates `backend/uv.lock` via the configured `build_command`, writes `backend/CHANGELOG.md`, commits the lot, tags `vX.Y.Z`, and pushes.
+
+Note that `assets` paths in that config resolve from the git root, unlike `version_toml` and `version_variables`, which resolve from the working directory. That is why the lockfile is listed as `backend/uv.lock`.
+
+The push currently fails: the `GH_TOKEN` in use is a fine-grained PAT with no access to this repository, so git falls back to prompting for credentials. Tracked as a GitHub issue. The version commit and tag are created locally before that point, so a failed release leaves them behind.
+
 ## CI
 
 `Jenkinsfile` runs four stages — backend tests, frontend tests, then backend and frontend quality checks — on the Jenkins instance managed by vertex-studio, where the repo is registered via `jenkins_repos` in that project's inventory. Any stage failing fails the build, so lint findings block a merge.
