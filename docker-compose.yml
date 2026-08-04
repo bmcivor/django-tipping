@@ -19,7 +19,7 @@ services:
     environment:
       POSTGRES_USER: django
       POSTGRES_PASSWORD: django
-      POSTGRES_DB: django
+      POSTGRES_DB: django-tipping
     volumes:
       - db-data:/var/lib/postgresql/
     networks:

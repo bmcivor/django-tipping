@@ -28,6 +28,7 @@ keywords = ["django-tipping", "tipping"]
 dependencies = [
     "django==6.0.7",
     "django-stubs==6.0.7",
+    "factory-boy==3.3.3",
     "mypy==2.3.0",
     "psycopg2-binary==2.9.12",
     "ruff==0.16.1",
@@ -45,6 +46,7 @@ dev = [
     "pytest==9.0.2",
     "python-semantic-release==9.21.1",
     "pytest-django==4.12.0",
+    "types-psycopg2==2.9.21.20260724",
 ]
 
 [tool.semantic_release]

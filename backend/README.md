@@ -8,10 +8,21 @@ Django project for django-tipping. Packaged with [uv](https://docs.astral.sh/uv/
 |---|---|
 | `manage.py` | Django entry point |
 | `tipping/` | Project package — settings, URLs, WSGI/ASGI |
-| `users/` | `users` app |
+| `users/` | `users` app — holds the custom user model |
 | `pyproject.toml` | Dependencies and tool configuration |
 | `uv.lock` | Resolved dependency versions, committed |
 | `Dockerfile` | `base` → `production` / `test` stages |
+
+## Users
+
+`AUTH_USER_MODEL` is `users.User`, not Django's default. Email is the login
+identifier — `username` is removed and `USERNAME_FIELD` is `email`, since
+sign-in is expected to go through social providers that supply no username.
+
+Email is unique and mandatory. `CustomUserManager` rejects a missing address
+with a readable error, and a check constraint makes an empty one unreachable
+regardless of how the row is written. The reasoning is in the model's
+docstring.
 
 ## Dependencies
 
