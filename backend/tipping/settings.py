@@ -36,12 +36,17 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
+    "django.contrib.sites",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
     "users",
 ]
 
 MIDDLEWARE = [
+    "allauth.account.middleware.AccountMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -70,7 +75,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "tipping.wsgi.application"
 
+# Authentication
 AUTH_USER_MODEL = "users.User"
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+ACCOUNT_LOGIN_METHODS = {"email"}
+
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+
+SITE_ID = 1
+
+# Email
+EMAIL_HOST = os.getenv("EMAIL_HOST", "mail")
+
+EMAIL_PORT = os.getenv("EMAIL_PORT", 1025)
+
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@django-tipping.local")
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
