@@ -31,6 +31,7 @@ nav:
     - Configuration: reference/configuration.md
     - Repository layout: reference/repository-layout.md
   - Explanation:
+    - Data model: explanation/data-model.md
     - Users and authentication: explanation/users-and-auth.md
     - Docker images: explanation/docker-images.md
     - CI: explanation/ci.md

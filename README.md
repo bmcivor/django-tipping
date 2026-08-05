@@ -2,6 +2,11 @@
 
 A Django application for managing and conducting sports tipping competitions.
 
+A group of people join a competition, pick a winner for each match in a round,
+and are scored on how many they got right. The model layer behind that is
+specified in [Data model](docs/explanation/data-model.md) — entities, the
+reasoning behind each one, and what has deliberately been left out.
+
 ## Getting started
 
 ```bash
@@ -35,6 +40,7 @@ directly:
 | [Services](docs/reference/services.md) | Compose services, ports, profiles |
 | [Configuration](docs/reference/configuration.md) | Environment variables and settings |
 | [Repository layout](docs/reference/repository-layout.md) | What lives where |
+| [Data model](docs/explanation/data-model.md) | Entities, relationships, and the reasoning |
 | [Users and authentication](docs/explanation/users-and-auth.md) | Custom user model, allauth |
 | [Docker images](docs/explanation/docker-images.md) | Stage structure for the backend and frontend images |
 | [CI](docs/explanation/ci.md) | The Jenkins pipeline |
