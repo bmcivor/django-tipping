@@ -1,0 +1,36 @@
+site_name: django-tipping
+site_description: A Django application for managing and conducting sports tipping competitions.
+
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.sections
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Guides:
+    - Running commands: guides/running-commands.md
+    - Testing: guides/testing.md
+    - Quality checks: guides/quality-checks.md
+    - Dependencies: guides/dependencies.md
+    - Releases: guides/releases.md
+  - Reference:
+    - Services: reference/services.md
+    - Configuration: reference/configuration.md
+    - Repository layout: reference/repository-layout.md
+  - Explanation:
+    - Users and authentication: explanation/users-and-auth.md
+    - Docker images: explanation/docker-images.md
+    - CI: explanation/ci.md

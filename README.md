@@ -2,101 +2,51 @@
 
 A Django application for managing and conducting sports tipping competitions.
 
+## Getting started
+
+```bash
+docker compose up
+```
+
+Starts Postgres, waits for it to report healthy, applies migrations, then
+brings up the backend on <http://localhost:8000> and the frontend on
+<http://localhost:5173>.
+
+## Documentation
+
+Everything else lives in [`docs/`](docs/), built with
+[mkdocs-material](https://squidfunk.github.io/mkdocs-material/):
+
+```bash
+docker compose up docs
+```
+
+Serves on <http://localhost:8001> with live reload. Or read the markdown
+directly:
+
+| | |
+|---|---|
+| [Getting started](docs/getting-started.md) | Requirements, first run, creating a superuser |
+| [Running commands](docs/guides/running-commands.md) | `manage.py` through compose, and the traps |
+| [Testing](docs/guides/testing.md) | `./scripts/test.sh` |
+| [Quality checks](docs/guides/quality-checks.md) | `./scripts/lint.sh`, and fixing what it finds |
+| [Dependencies](docs/guides/dependencies.md) | uv and npm |
+| [Releases](docs/guides/releases.md) | python-semantic-release |
+| [Services](docs/reference/services.md) | Compose services, ports, profiles |
+| [Configuration](docs/reference/configuration.md) | Environment variables and settings |
+| [Repository layout](docs/reference/repository-layout.md) | What lives where |
+| [Users and authentication](docs/explanation/users-and-auth.md) | Custom user model, allauth |
+| [Docker images](docs/explanation/docker-images.md) | Stage structure for the backend and frontend images |
+| [CI](docs/explanation/ci.md) | The Jenkins pipeline |
+
 ## Layout
 
 | Path | Contents |
 |---|---|
 | `backend/` | Django project (`tipping`) and its apps. See [backend/README.md](backend/README.md). |
 | `frontend/` | Vite + React + TypeScript SPA. See [frontend/README.md](frontend/README.md). |
+| `docs/` | Documentation source. |
 | `scripts/` | Developer entry points. |
-| `docker-compose.yml` | Service definitions for the whole stack. |
-| `docker-compose.override.yml` | Dev-only source bind mounts, merged automatically by compose. |
-| `Jenkinsfile` | CI pipeline. |
-
-## Services
-
-| Service | Purpose | Host port | Profile |
-|---|---|---|---|
-| `backend` | Django dev server | 8000 | — |
-| `frontend` | Vite dev server | 5173 | — |
-| `db` | PostgreSQL 18 | not published | — |
-| `migrate` | One-shot `manage.py migrate`, runs before `backend` starts | — | — |
-| `backend-test` | pytest | — | `test` |
-| `frontend-test` | Vitest | — | `test` |
-| `release` | python-semantic-release | — | `release` |
-
-`db` is deliberately not published to the host — everything reaches it as `db:5432` over the compose network.
-
-Services with a profile are excluded from `docker compose up`, so bringing the stack up starts the four unprofiled ones and nothing else. `docker compose run <service>` enables that service's own profile, which is why the scripts in `scripts/` reach them without naming one.
-
-## Running
-
-```bash
-docker compose up
-```
-
-Starts Postgres, waits for it to report healthy, applies migrations, then brings up the backend and frontend.
-
-## Tests
-
-```bash
-./scripts/test.sh            # backend then frontend
-./scripts/test.sh backend    # backend only
-./scripts/test.sh frontend   # frontend only
-```
-
-Arguments after `backend` are passed through to pytest:
-
-```bash
-./scripts/test.sh backend -k smoke
-```
-
-The script tears the stack down before and after each run and always rebuilds, so a run never uses stale images. It invokes compose with `-f docker-compose.yml`, which excludes the dev bind mounts in the override file — test containers run the source baked into the image, matching what CI does.
-
-## Quality checks
-
-```bash
-./scripts/lint.sh            # backend then frontend
-./scripts/lint.sh backend    # ruff format --check, ruff check, mypy
-./scripts/lint.sh frontend   # eslint, prettier --check
-```
-
-Checks only — nothing here rewrites source. Every check runs even when an earlier one fails, so a single pass shows all outstanding work, and the script exits non-zero if any of them reported something.
-
-Unlike `test.sh` there is no teardown, because linting needs no database and a run should not disturb a stack you already have up. It also passes `--no-deps`, so checking the backend doesn't boot Postgres and apply migrations first.
-
-To fix what it reports, run the fixers against `backend` and `frontend`. Those always mount your source, so writes land on disk. `frontend-test` never has a mount and `backend-test` only gets one from the override file, so results there depend on how compose was invoked:
-
-```bash
-docker compose run --rm --no-deps backend ruff format .
-docker compose run --rm --no-deps backend ruff check --fix .
-docker compose run --rm --no-deps frontend npx prettier --write .
-```
-
-## Releases
-
-[python-semantic-release](https://python-semantic-release.readthedocs.io/), run inside the `release` container so it has git and the dev dependencies:
-
-```bash
-./scripts/release.sh --noop version --minor   # report the bump, write nothing
-./scripts/release.sh version --minor          # bump, commit, tag
-```
-
-`--noop` is a global flag and has to come before the subcommand. Always worth running first — it prints every command it would execute, including the exact `git add` and `git push`.
-
-**Releases are cut from the `tag-release` branch.** `[tool.semantic_release.branches.main] match = "tag-release"` in `backend/pyproject.toml` names it, and semantic-release declines to release from anywhere else.
-
-The bump level comes from conventional commit messages since the last tag — `fix:` gives a patch, `feat:` a minor, `feat!:` or a `BREAKING CHANGE:` footer a major. Passing `--patch`, `--minor` or `--major` forces it instead.
-
-A release rewrites both version files — `backend/pyproject.toml` and `frontend/package.json` — regenerates `backend/uv.lock` via the configured `build_command`, writes `backend/CHANGELOG.md`, commits the lot, tags `vX.Y.Z`, and pushes.
-
-Note that `assets` paths in that config resolve from the git root, unlike `version_toml` and `version_variables`, which resolve from the working directory. That is why the lockfile is listed as `backend/uv.lock`.
-
-The push currently fails: the `GH_TOKEN` in use is a fine-grained PAT with no access to this repository, so git falls back to prompting for credentials. The version commit and tag are created locally before that point, so a failed release leaves them behind.
-
-## CI
-
-`Jenkinsfile` runs four stages — backend tests, frontend tests, then backend and frontend quality checks — on the Jenkins instance managed by vertex-studio, where the repo is registered via `jenkins_repos` in that project's inventory. Any stage failing fails the build, so lint findings block a merge.
 
 ## Licence
 

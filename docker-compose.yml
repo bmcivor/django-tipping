@@ -84,6 +84,17 @@ services:
     networks:
      - tipping-network
 
+  docs:
+    profiles: ["docs"]
+    image: squidfunk/mkdocs-material:9.7.1
+    # The whole repository, because mkdocs.yml sits beside docs/ at the root.
+    # Read-only: serving must never write into the source tree.
+    volumes:
+     - .:/docs:ro
+    ports:
+     - 8001:8001
+    command: serve -a 0.0.0.0:8001
+
   release:
     profiles: ["release"]
     build:
