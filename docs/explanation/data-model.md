@@ -46,7 +46,7 @@ tips.
 
 | Field | Type | Notes |
 |---|---|---|
-| `city` | `CharField` | e.g. "Penrith" |
+| `location` | `CharField` | e.g. "Penrith" |
 | `mascot` | `CharField` | e.g. "Panthers" |
 | `abbreviation` | `CharField` | e.g. "PEN" |
 
@@ -59,6 +59,8 @@ tips.
 | `home_team` | `FK Team` | `related_name="home_matches"` |
 | `away_team` | `FK Team` | `related_name="away_matches"` |
 | `kickoff_time` | `DateTimeField` | Per-match. The round cutoff derives from it |
+| `home_score` | `PositiveSmallIntegerField` | Nullable — absent until played |
+| `away_score` | `PositiveSmallIntegerField` | Nullable — absent until played |
 
 ## `competitions`
 
@@ -96,20 +98,34 @@ competition, and going through the membership means the database refuses a tip
 in a competition the user never joined. The alternative is a `User` FK plus
 that rule enforced in application code.
 
-**`Team` is a model, and splits into `city` and `mascot`.** The flow alone
+**`Team` is a model, and splits into `location` and `mascot`.** The flow alone
 doesn't force either — two `CharField`s on `Match` would do — but teams are the
 natural landing point for externally sourced data, so they need somewhere to
 live, and the split is cheap to reverse if a feed turns out to supply only a
 full name.
 
-The split does not hold for every NRL side. The Dolphins have no city in their
-name, and Wests Tigers' "Wests" is a club rather than a place. Either `city`
-allows blank, or it becomes a looser `location`.
+`location` rather than `city`, because the first part of a team's name often
+isn't one. Wests Tigers' "Wests" is a club, GWS Giants' is a region, and the
+Dolphins have nothing there at all — so it also allows blank.
 
 **`Season` exists even though nothing reads it yet.** Round 1 recurs every
 year, so matches need something to hang off that distinguishes them. A
 competition points at one season, which is also what tells the app which
 matches its members are tipping on.
+
+**Scores are columns on `Match`, not a `Result` table.** There is at most one
+result per match and it is two integers, so a separate table buys a join and
+nothing else. Null means not played yet. A `Result` model would earn its place
+if a result gained its own lifecycle — provisional then confirmed, say — or
+enough fields to be worth isolating.
+
+That holds while there is one sport. NRL has a single score per side; AFL is
+goals, behinds and a total, and is always displayed that way. When a second
+sport arrives, the likely shape is these two columns kept as the queryable
+score plus a `JSONField` for the sport-specific breakdown, which is rendered
+rather than filtered on. Multi-table inheritance and `django-polymorphic` are
+the alternatives, and both cost more than the problem is worth until there is
+a second sport to test the assumption.
 
 **Round is an integer on `Match`, not its own model.** With `Season` present,
 `(season, round_number)` identifies a round without a table. It becomes a model
@@ -120,8 +136,8 @@ ladder.
 
 Deliberately absent, each waiting for a flow that needs it:
 
-- Scoring, results, ladders, finals
-- More than one sport, and therefore `Sport`
+- Tip scoring, ladders, finals. Match scores are stored; nothing reads them yet
+- More than one sport, and therefore `Sport` and per-sport score breakdowns
 - Round as an entity, and stored per-round deadlines
 - Configurable tip cutoffs
 - Competition invitations, joining rules, private or public comps
