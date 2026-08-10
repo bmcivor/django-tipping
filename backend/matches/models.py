@@ -78,5 +78,8 @@ class Match(models.Model):
     home_score = models.PositiveSmallIntegerField(null=True, blank=True)
     away_score = models.PositiveSmallIntegerField(null=True, blank=True)
 
+    class Meta:
+        verbose_name_plural = "matches"
+
     def __str__(self) -> str:
         return f"Season {self.season.name}: Round {self.round_number} -- {self.home_team.abbreviation} vs. {self.away_team.abbreviation}"
