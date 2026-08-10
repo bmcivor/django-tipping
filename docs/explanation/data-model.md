@@ -40,7 +40,12 @@ tips.
 
 | Field | Type | Notes |
 |---|---|---|
-| `name` | `CharField` | e.g. "NRL 2026" |
+| `name` | `CharField` | The competition, e.g. "NRL" |
+| `year` | `PositiveSmallIntegerField` | e.g. 2026 |
+
+Unique on `(name, year)` as `unique_season_name_year`, so NRL 2026 and AFL 2026
+can coexist while the same season cannot be entered twice. A `CheckConstraint`
+holds `year` between 1900 and 2100.
 
 ### `Team`
 
@@ -112,6 +117,11 @@ Dolphins have nothing there at all — so it also allows blank.
 year, so matches need something to hang off that distinguishes them. A
 competition points at one season, which is also what tells the app which
 matches its members are tipping on.
+
+The competition and the year are separate fields rather than one name, so the
+uniqueness rule can be `(name, year)`. On a single `name` field the constraint
+would either be nothing, or unique on a string that has to be spelled
+identically every time.
 
 **Scores are columns on `Match`, not a `Result` table.** There is at most one
 result per match and it is two integers, so a separate table buys a join and
